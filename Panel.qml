@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell.Io
+import Quickshell
 import qs.Commons
 import qs.Commons as Commons
 import qs.Ui
@@ -27,7 +28,10 @@ Panel {
   property var hostWidget: null
   readonly property var barIdentity: hostWidget || root
 
-  Commons.Translations { id: strings; directory: Qt.resolvedUrl("i18n") }
+  Commons.Translations {
+    id: strings
+    directory: Qt.resolvedUrl("i18n")
+  }
 
   readonly property color contentForeground: bar ? bar.foreground : Commons.Color.foreground
   readonly property string contentFontFamily: bar ? bar.fontFamily : Style.font.family
@@ -83,6 +87,8 @@ Panel {
   // Wall-clock milliseconds of the last successful AlAdhan response.
   property real lastFetchMs: 0
   property bool networkFailed: false
+  readonly property string cacheDir: (Quickshell.env("XDG_CACHE_HOME") || (Quickshell.env("HOME") + "/.cache")) + "/salati"
+  readonly property string cachePath: cacheDir + "/prayer-times.json"
 
   readonly property real nowSeconds: {
     var current = root.now
@@ -243,6 +249,34 @@ Panel {
     return out
   }
 
+  function loadCache(raw) {
+    try {
+      var saved = JSON.parse(String(raw || ""))
+      if (!saved || !saved.date || !saved.times || saved.times.valid !== true) return
+      if (saved.date === root.apiDate(new Date())) {
+        root.times = saved.times
+        root.timesDate = saved.date
+        root.observedSource = saved.source || "auto"
+        root.lastFetchMs = Number(saved.savedAt) || Date.now()
+      }
+      if (saved.tomorrowDate === root.apiDate(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1))
+          && saved.tomorrow && saved.tomorrow.valid === true) root.tomorrowTimes = saved.tomorrow
+    } catch (error) { console.warn("Salati: cached timings could not be read") }
+  }
+
+  function saveCache() {
+    if (!root.times || root.times.valid !== true) return
+    var payload = {
+      date: root.timesDate,
+      source: root.observedSource,
+      savedAt: Date.now(),
+      times: root.times,
+      tomorrowDate: root.apiDate(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1)),
+      tomorrow: root.tomorrowTimes
+    }
+    cacheFile.setText(JSON.stringify(payload))
+  }
+
   // geo.omarchy.org and ipwho.is both answer with decimal-degree latitude and
   // longitude. Their names and timezone strings are ignored: only the numbers
   // reach the timings request, and only after a range check.
@@ -316,7 +350,7 @@ Panel {
     var fresh = root.times && root.times.valid === true
       && root.timesDate === today
       && root.observedSource !== "offline"
-      && (Date.now() - root.lastFetchMs) < 30 * 60 * 1000
+      && (Date.now() - root.lastFetchMs) < 24 * 60 * 60 * 1000
     if (fresh) return
 
     root.refreshInFlight = true
@@ -439,6 +473,7 @@ Panel {
     }
     root.refreshInFlight = false
     root.networkFailed = false
+    root.saveCache()
   }
 
   function refresh() {
@@ -448,6 +483,23 @@ Panel {
 
   // ---- Lifecycle -------------------------------------------------------
   Component.onCompleted: root.applyOffline()
+
+  FileView {
+    id: cacheFile
+    path: root.cachePath
+    watchChanges: false
+    atomicWrites: true
+    printErrors: false
+    onLoaded: root.loadCache(text())
+    onLoadFailed: { if (!ensureCacheDir.running) ensureCacheDir.running = true }
+  }
+
+  Process {
+    id: ensureCacheDir
+    running: false
+    command: ["/usr/bin/mkdir", "-p", root.cacheDir]
+    onExited: cacheFile.reload()
+  }
 
   onSettingsChanged: {
     root.now = new Date()
@@ -670,9 +722,9 @@ Panel {
 
           Rectangle {
             width: parent.width
-            height: Style.space(128)
+            height: Style.space(112)
             radius: Style.space(18)
-            color: Style.selectionFillFor(root.contentForeground, Commons.Color.accent)
+            color: "transparent"
 
             Column {
               anchors.centerIn: parent
@@ -682,7 +734,7 @@ Panel {
                 text: root.countdownText
                 color: Commons.Color.accent
                 font.family: root.contentFontFamily
-                font.pixelSize: 48
+                font.pixelSize: 64
                 font.bold: true
                 font.features: ({ "tnum": 1 })
               }
