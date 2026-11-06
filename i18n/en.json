@@ -1,0 +1,17 @@
+{
+  "panel.title": "Prayer times",
+  "panel.until": "until %1",
+  "panel.source": "Times: AlAdhan.com · location auto-detected",
+  "panel.sourceManual": "Times: AlAdhan.com · manual coordinates",
+  "panel.sourceOffline": "Offline · calculated locally",
+  "panel.networkFailed": "Could not connect. Showing local or previously loaded times.",
+  "panel.retry": "Retry",
+  "panel.invalidCoords": "Set latitude and longitude in the plugin settings.",
+  "tooltip.default": "Prayer times",
+  "prayer.fajr": "Fajr",
+  "prayer.sunrise": "Sunrise",
+  "prayer.dhuhr": "Dhuhr",
+  "prayer.asr": "Asr",
+  "prayer.maghrib": "Maghrib",
+  "prayer.isha": "Isha"
+}

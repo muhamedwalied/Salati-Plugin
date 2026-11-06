@@ -1,0 +1,17 @@
+{
+  "panel.title": "مواقيت الصلاة",
+  "panel.until": "متبقّي على %1",
+  "panel.source": "المواقيت: AlAdhan.com · الموقع تلقائي",
+  "panel.sourceManual": "المواقيت: AlAdhan.com · إحداثيات يدوية",
+  "panel.sourceOffline": "دون اتصال · تُحسب محلياً",
+  "panel.networkFailed": "تعذّر الاتصال؛ المعروض حساب محلي أو آخر مواقيت محفوظة.",
+  "panel.retry": "إعادة المحاولة",
+  "panel.invalidCoords": "حدد خط العرض وخط الطول في إعدادات الإضافة.",
+  "tooltip.default": "مواقيت الصلاة",
+  "prayer.fajr": "الفجر",
+  "prayer.sunrise": "الشروق",
+  "prayer.dhuhr": "الظهر",
+  "prayer.asr": "العصر",
+  "prayer.maghrib": "المغرب",
+  "prayer.isha": "العشاء"
+}

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "muhamed.salati",
+  "name": "Salati",
+  "version": "1.0.0",
+  "author": "muhamed",
+  "license": "MIT",
+  "description": "Islamic prayer times with a live countdown to the next prayer. Times fetched from AlAdhan.com using your network location (or manual/offline modes), shown on click.",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "BarWidget.qml" },
+  "barWidget": {
+    "displayName": "Salati",
+    "description": "Islamic prayer times with a live countdown to the next prayer",
+    "category": "Time",
+    "aliases": ["salati", "صلاتي", "prayer", "prayer times", "adhan", "salah", "fajr", "maghrib"],
+    "allowMultiple": false,
+    "defaultSection": "centerEnd",
+    "defaults": {
+      "locationMode": "auto",
+      "latitude": "24.7136",
+      "longitude": "46.6753",
+      "calculationMethod": "umm_al_qura",
+      "madhab": "standard"
+    },
+    "schema": [
+      {
+        "key": "locationMode",
+        "type": "enum",
+        "label": "Location mode (auto = network-detected via geo.omarchy.org; manual = use the coordinates below; offline = no network, local calculation)",
+        "options": ["auto", "manual", "offline"],
+        "defaultValue": "auto"
+      },
+      { "key": "latitude", "type": "string", "label": "Latitude (decimal degrees, e.g. 24.7136)", "defaultValue": "24.7136" },
+      { "key": "longitude", "type": "string", "label": "Longitude (decimal degrees, e.g. 46.6753)", "defaultValue": "46.6753" },
+      { "key": "calculationMethod", "type": "enum", "label": "Calculation method", "options": ["umm_al_qura", "muslim_world_league", "isna", "egypt", "karachi"], "defaultValue": "umm_al_qura" },
+      { "key": "madhab", "type": "enum", "label": "Asr juristic method (standard = Shafi'i/Maliki/Hanbali, hanafi)", "options": ["standard", "hanafi"], "defaultValue": "standard" }
+    ]
+  }
+}
